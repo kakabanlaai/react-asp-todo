@@ -2,7 +2,7 @@
 type Status = 'initialized' | 'progress' | 'done';
 
 type Todo = {
-  id: string;
-  text: string;
-  status: Status;
+  id: number;
+  name: string;
+  isComplete: boolean;
 };

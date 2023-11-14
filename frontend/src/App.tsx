@@ -2,11 +2,14 @@ import {useState} from 'react';
 import {Button} from './components/ui/button';
 import {Input} from './components/ui/input';
 import TodoItem from './components/todo-item';
-import {nanoid} from 'nanoid';
+import {useAddTodo, useGetAllTodo} from './service/queries/todos';
+import toast from 'react-hot-toast';
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>([]);
   const [todo, setTodo] = useState('');
+
+  const {data} = useGetAllTodo();
+  const {mutate} = useAddTodo(todo);
 
   return (
     <div className='min-h-screen bg-muted py-8'>
@@ -21,17 +24,18 @@ function App() {
             placeholder='Start typing...'
             autoFocus
             value={todo}
-            onChange={(e) => setTodo(e.target.value)}
+            onChange={(e) => {
+              setTodo(e.target.value);
+            }}
           />
 
           <Button
             onClick={() => {
-              if (todo !== '') {
-                setTodos((prev) => [
-                  ...prev,
-                  {id: nanoid(), text: todo, status: 'initialized'},
-                ]);
+              if (todo === '') {
+                toast.error('Tên nhiệm vụ không được trống');
+                return;
               }
+              mutate();
             }}
           >
             Save
@@ -40,7 +44,7 @@ function App() {
 
         <section className='mt-8 max-w-lg mx-auto'>
           <div className='flex flex-col gap-y-2'>
-            {todos.map((todo) => (
+            {data?.map((todo) => (
               <TodoItem todo={todo} />
             ))}
           </div>
